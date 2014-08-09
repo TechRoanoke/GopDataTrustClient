@@ -27,21 +27,8 @@ namespace TechRoanoke.DataTrustClient
             _queryPrefix = prefix + "query.php?ClientToken=" + token;
             _updatePrefix = prefix + "direct_write.php?ClientToken=" + token;
         }
-
-        public QueryBuilder<object> QuerySelect(params string[] fieldNames)
-        {
-            var qb = new QueryBuilder<object> { _fieldNames = fieldNames, _client = this };
-            return qb;
-        }
-
-        public QueryBuilder<TSelect> QuerySelect<TSelect>() where TSelect : new()
-        {
-            var fieldNames = Utility.GetPropertyNames(typeof(TSelect));
-            var qb = new QueryBuilder<TSelect> { _fieldNames = fieldNames,  _client = this };
-            return qb;
-        }
-
-        public async Task<TSelect[]> ExecuteQuery<TSelect>(string dql) where TSelect : new()
+                
+        internal async Task<JObject[]> RunQueryInternalAsync(string dql)
         {
             // DQL will get encoded, so spaces are ok. 
             string uri = _queryPrefix + "&q=" + dql;
@@ -50,35 +37,9 @@ namespace TechRoanoke.DataTrustClient
             Result result = JsonConvert.DeserializeObject<Result>(body);
             if (!result.Success)
             {
-                throw new InvalidOperationException(result.Error);
+                throw new DqlException(result.Error, dql);
             }
-            // Convert results back to dictionary 
-            int len = result.Results.Length;
-            TSelect[] dd = new TSelect[len];
-            for (int i = 0; i < len; i++)
-            {
-                dd[i] = Utility.Convert<TSelect>(result.Results[i]);
-            }
-
-            return dd;
-        }
-
-        public async Task<IDictionary<string, string>[]> ExecuteQuery(string dql)
-        {            
-            // URI will get encoded, so spaces in DQL are ok. 
-            string uri = _queryPrefix + "&q=" + dql;
-            
-            Result result = await Send<Result>(uri);
-            
-            // Convert results back to dictionary 
-            int len = result.Results.Length;
-            IDictionary<string, string>[] dd = new IDictionary<string, string>[len];
-            for (int i = 0; i < len; i++)
-            {
-                dd[i] = Utility.Convert(result.Results[i]);
-            }
-
-            return dd;
+            return result.Results;
         }
 
         private static async Task<TResult> Send<TResult>(string uri) where TResult : ResultBase
@@ -105,7 +66,7 @@ namespace TechRoanoke.DataTrustClient
             return body;
         }
 
-        public async Task UpdateAsync(PK_ID pkid, IDictionary<string, string> values, string reason)
+        public async Task UpdateAsync(PersonKey pkid, IDictionary<string, string> values, string reason)
         {
             // $$$ This is failing. Appears to be a bug in their server. 
             StringBuilder sb = new StringBuilder();
@@ -147,13 +108,9 @@ namespace TechRoanoke.DataTrustClient
 
     class Result : ResultBase
     {
-        public JToken[] Results { get; set; }
+        public JObject[] Results { get; set; }
 
         public int Results_Count { get; set; }
         public bool More_Results { get; set; }
     }
-
-    // Person ID
-    public enum PK_ID : long { }
-
 }

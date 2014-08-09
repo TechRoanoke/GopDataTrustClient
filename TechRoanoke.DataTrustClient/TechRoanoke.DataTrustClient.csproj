@@ -39,8 +39,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
+    <Compile Include="ClientExtensions.cs" />
+    <Compile Include="Field.cs" />
+    <Compile Include="DqlException.cs" />
+    <Compile Include="FieldTypes\PartyKey.cs" />
+    <Compile Include="FieldTypes\PersonID.cs" />
+    <Compile Include="FieldTypes\RncCalcParty.cs" />
+    <Compile Include="FieldTypes\Sex.cs" />
     <Compile Include="QueryBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FieldTypes\State.cs" />
+    <Compile Include="TableExtensions.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
