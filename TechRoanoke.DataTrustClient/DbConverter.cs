@@ -11,34 +11,6 @@ using System.Threading.Tasks;
 
 namespace TechRoanoke.DataTrustClient
 {
-    public abstract class ConvertEntry
-    {
-        public abstract string ConvertToDbValue(object obj);
-        public abstract object ConvertToObject(string val);
-    }
-
-    public class ConvertEntry<T> : ConvertEntry
-    {
-        public readonly Func<T, string> _funcToDbValue;
-        public readonly Func<string, T> _funcToObj;
-
-        public ConvertEntry(Func<T, string> funcToDbValue, Func<string, T> funcToObj)
-        {
-            _funcToDbValue = funcToDbValue;
-            _funcToObj = funcToObj;
-        }
-
-        public override string ConvertToDbValue(object obj)
-        {
-            return _funcToDbValue((T)obj);
-        }
-
-        public override object ConvertToObject(string val)
-        {
-            return _funcToObj(val);
-        }
-    }
-
     // Convert C# types into DbValue objects. 
     public class DbConverter
     {
@@ -122,28 +94,6 @@ namespace TechRoanoke.DataTrustClient
         public static string Quote(object o)
         {
             return string.Format("'{0}'", o);
-        }
-
-        // Convert from DataTrust date format into C# format. 
-        public static DateTime CoerceDate(string val)
-        {
-            // YYYYMMDD or YYYYMM or YYYY
-            if (val.Length == 8)
-            {
-                var date = DateTime.ParseExact(val, "yyyyMMdd", CultureInfo.InvariantCulture);
-                return date;
-            }
-            if (val.Length == 6)
-            {
-                var date = DateTime.ParseExact(val, "yyyyMM", CultureInfo.InvariantCulture);
-                return date;
-            }
-            if (val.Length == 4)
-            {
-                var date = DateTime.ParseExact(val, "yyyy", CultureInfo.InvariantCulture);
-                return date;
-            }
-            return DateTime.Parse(val);
         }
     }
 

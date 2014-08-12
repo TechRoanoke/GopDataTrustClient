@@ -18,12 +18,25 @@ namespace Driver
 
             Client c = new Client(token);
 
+            ReportDates(c);
             Report(c);
+        }
+
+
+        static void ReportDates(Client c)
+        {
+            // Date
+            //SELECT firstname WHERE dateofbirth > '1981' AND dateofbirth < '1995' LIMIT 10
+            var q1 = Query.Select("firstname").
+                Where(Field.DateOfBirth, "1981", CompareOp.Greater).
+                Where(Field.DateOfBirth, new DateTime(1995, 1, 1), CompareOp.Less).
+                Limit(10);
+
+            var r1 = c.Execute(q1.ToDql());
         }
 
         static void Report(Client c)
         {
-
             // Totally loosely typed query 
             // Get some unique names from the state
             string[] q8 = c.Execute("SELECT DISTINCT firstname WHERE stateabbreviation='IL' LIMIT 100").GetSingleColumn();

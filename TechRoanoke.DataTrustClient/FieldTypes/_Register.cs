@@ -32,6 +32,8 @@ namespace TechRoanoke.DataTrustClient
         public readonly static FieldDesc<PartyKey> Party = new FieldDesc<PartyKey>("party");
         public readonly static FieldDesc<RncCalcParty> RNCCalcParty = new FieldDesc<RncCalcParty>("RNCCalcParty");
 
+        public readonly static FieldDesc<DateTime> DateOfBirth = new FieldDesc<DateTime>("dateofbirth");
+
         public static string Count(string fieldName)
         {
             return "count(" + fieldName + ")";
@@ -46,7 +48,7 @@ namespace TechRoanoke.DataTrustClient
             DbConverter.Add<PartyKey>(x => x.DBValue, PartyKey.Parse);
             DbConverter.Add<Sex>(SexExtensions.ToDbValue, SexExtensions.Parse);
             DbConverter.Add<RncCalcParty>(RncCalcPartyExtensions.ToDbValue, RncCalcPartyExtensions.Parse);
-            DbConverter.Add<DateTime>(null, DbConverter.CoerceDate);
+            DbConverter.Add<DateTime>(DateTimeConverter.ToDbValue, DateTimeConverter.ConvertToDate);
         }
     }   
 }

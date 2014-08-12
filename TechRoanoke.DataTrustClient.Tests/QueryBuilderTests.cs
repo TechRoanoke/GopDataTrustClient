@@ -77,5 +77,20 @@ namespace TechRoanoke.DataTrustClient.Tests
             Assert.AreEqual("SELECT f1 WHERE CongressionalDistrict='12' AND cd='12' AND cd=12 AND CongressionalDistrict='12' LIMIT 10",
                 dql);
         }
+
+        [TestMethod]
+        public void QueryDates()
+        {
+            var q4 = Query.Select("firstname").
+                Where(Field.DateOfBirth, "1981", CompareOp.Greater).
+                Where(Field.DateOfBirth, new DateTime(1995, 1, 1), CompareOp.Less).
+                Limit(10);               
+
+            var dql = q4.ToDql();
+
+            Assert.AreEqual(
+                "SELECT firstname WHERE dateofbirth>'1981' AND dateofbirth<'1995' LIMIT 10",
+                dql);
+        }
     }
 }
