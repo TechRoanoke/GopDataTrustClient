@@ -19,7 +19,7 @@ namespace TechRoanoke.DataTrustClient
 
         private PartyKey(char dbValue, string displayName)
         {
-            _dbValue = dbValue.ToString();
+            _dbValue = string.Format("'{0}'", dbValue);
             _displayName = displayName;
         }
 
@@ -62,7 +62,7 @@ namespace TechRoanoke.DataTrustClient
 
             foreach (var key in all)
             {
-                int idx = (int)key._dbValue[0] - 'A';
+                int idx = (int)key._dbValue[1] - 'A';
                 keys[idx] = key;
             }
             return keys;
@@ -91,7 +91,7 @@ namespace TechRoanoke.DataTrustClient
 
         public override string ToString()
         {
-            return string.Format("{0} - {1}", _dbValue, _displayName);
+            return string.Format("{0} - {1}", _dbValue[1], _displayName);
         }
     }
 }

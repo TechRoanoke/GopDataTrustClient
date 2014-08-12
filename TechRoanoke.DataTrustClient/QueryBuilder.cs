@@ -61,7 +61,7 @@ namespace TechRoanoke.DataTrustClient
     {
         internal string[] _selectFields;
         internal string _selectDistinct;
-        internal List<Tuple<string, CompareOp, object>> _where = new List<Tuple<string, CompareOp, object>>();
+        internal List<Tuple<string, CompareOp, string>> _where = new List<Tuple<string, CompareOp, string>>();
         internal int _limit = 1;
 
         internal string _groupByField;
@@ -69,13 +69,28 @@ namespace TechRoanoke.DataTrustClient
         // Where clause gets evaluated on server, so fields don't need to match selection
         // Allowed operators in a WHERE statement include =, !=, >, >=, <, <=, ~, and !~. 
         // The wildcard character for a string comparison using ~ or !~ is %.
-        public QueryBuilder<TSelect> Where(string fieldName, object value)
+        public QueryBuilder<TSelect> Where(string fieldName, string value, CompareOp op = CompareOp.Equal)
         {
-            return Where(fieldName, CompareOp.Equal, value);
+            string dbValue = DbConverter.Quote(value);
+            return WhereInner(fieldName, dbValue, op);
         }
-        public QueryBuilder<TSelect> Where(string fieldName, CompareOp op, object value)
+
+        public QueryBuilder<TSelect> Where(string fieldName, int value, CompareOp op = CompareOp.Equal)
         {
-            _where.Add(Tuple.Create(fieldName, op, value));
+            string dbValue = value.ToString(); // Don't quote integers
+            return WhereInner(fieldName, dbValue, op);
+        }
+
+        public QueryBuilder<TSelect> Where<T>(FieldDesc<T> field, T value, CompareOp op = CompareOp.Equal)
+        {
+            string dbValue = field.ConvertToDbValue(value);
+            return WhereInner(field, dbValue, op);
+        }
+
+        // Caller converts the Value to a dbValue
+        private QueryBuilder<TSelect> WhereInner(string fieldName, string dbValue, CompareOp op)
+        {
+            _where.Add(Tuple.Create(fieldName, op, dbValue));
             return this;
         }
 
@@ -120,13 +135,13 @@ namespace TechRoanoke.DataTrustClient
             if (_selectFields != null)
             {
                 sb.Append("SELECT ");
-                sb.Append(string.Join(",", _selectFields));
-                sb.Append(" ");
+                sb.Append(string.Join(",", _selectFields));                
             }
             else if (_selectDistinct != null)
             {
                 sb.AppendFormat("SELECT DISTINCT {0}", _selectDistinct);
             }
+            sb.Append(" ");
 
             if (_where.Count > 0)
             {
@@ -141,8 +156,8 @@ namespace TechRoanoke.DataTrustClient
                     // Where requires the rhs be quoted for strings, not quoted for ints. 
                     string fieldName = kv.Item1;
                     string opName = CompareOpToString(kv.Item2);
-                    string valueName = ConvertObjectToDBValue(kv.Item3);
-                    sb.AppendFormat(" {0}{1}'{2}'", fieldName, opName, valueName);
+                    string valueName = kv.Item3;
+                    sb.AppendFormat(" {0}{1}{2}", fieldName, opName, valueName);
                     count++;
                 }
             }
@@ -160,26 +175,5 @@ namespace TechRoanoke.DataTrustClient
 
             return sb.ToString();
         }
-
-
-        public static string ConvertObjectToDBValue(object obj)
-        {
-            string str = obj as string;
-            if (str != null)
-            {
-                return str;
-            }
-
-            var fp = _converters[obj.GetType()];
-            var val = fp(obj);
-            return val;
-        }
-
-        static Dictionary<Type, Func<object, string>> _converters = new Dictionary<Type, Func<object, string>>() { 
-            { typeof(State), x =>  StateExtensions.ToDbValue((State) x) } ,
-            { typeof(PartyKey), x => ((PartyKey) x).DBValue },
-            { typeof(Sex), x => SexExtensions.ToDbValue((Sex) x) }
-        };
-
     }
 }

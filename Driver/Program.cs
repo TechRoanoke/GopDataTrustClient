@@ -14,7 +14,7 @@ namespace Driver
         static void Main(string[] args)
         {
             // REPLACE with your client token. 
-            string token = "YOUR TOKEN HERE";
+            string token = "YOUR KEY HERE";
 
             Client c = new Client(token);
 
@@ -23,6 +23,7 @@ namespace Driver
 
         static void Report(Client c)
         {
+
             // Totally loosely typed query 
             // Get some unique names from the state
             string[] q8 = c.Execute("SELECT DISTINCT firstname WHERE stateabbreviation='IL' LIMIT 100").GetSingleColumn();
@@ -59,8 +60,8 @@ namespace Driver
             
             // Get a list of counties and number of voters in each county 
             var q3 = Query.Select<CountyBreakdown>().
-                Where("stateabbreviation", "IL").
-                Where("CongressionalDistrict", "12").
+                Where(Field.StateAbbreviation, State.Illinois).
+                Where(Field.CongressionalDistrict, 12).
                 GroupBy("CountyName").
                 Limit(200);
             CountyBreakdown[] o3 = c.Execute(q3);
@@ -72,8 +73,6 @@ namespace Driver
                 Where("CongressionalDistrict", "12").
                 Limit(10);
             var r7 = c.Execute(q7);
-
-            
         }
     }
 

@@ -27,5 +27,15 @@ namespace TechRoanoke.DataTrustClient
         {
             return id == RncCalcParty.HardGop || id == RncCalcParty.WeakGop;
         }
+
+        public static string ToDbValue(this RncCalcParty id)
+        {
+            return DbConverter.IntToQuotedString((int)id);
+        }
+
+        public static RncCalcParty Parse(string val)
+        {
+            return (RncCalcParty) Enum.Parse(typeof(RncCalcParty), val);
+        }
     }
 }

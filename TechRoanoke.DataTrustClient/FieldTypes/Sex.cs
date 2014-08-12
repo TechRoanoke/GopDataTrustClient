@@ -29,10 +29,10 @@ namespace TechRoanoke.DataTrustClient
         {
             switch (sex)
             {
-                case Sex.Male: return "M";
-                case Sex.Female: return "F";
+                case Sex.Male: return "'M'";
+                case Sex.Female: return "'F'";
                 default:
-                    return "U";
+                    return "'U'";
 
             }
         }

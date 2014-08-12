@@ -40,7 +40,7 @@ namespace TechRoanoke.DataTrustClient
         // Return 2 -letter code for sending to database
         public static string ToDbValue(this State x)
         {
-            return _stateValues[(int)x];
+            return DbConverter.Quote(_stateValues[(int)x]);
         }
 
         static string[] _stateValues = new string[] { 

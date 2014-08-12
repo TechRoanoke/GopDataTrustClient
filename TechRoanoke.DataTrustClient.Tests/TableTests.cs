@@ -52,10 +52,10 @@ namespace TechRoanoke.DataTrustClient.Tests
             Assert.AreEqual(5, count);
 
             IDictionary<string, string> row3 = table.GetRow(2);
-            Assert.AreEqual("3", row3["RNCCalcParty"]);
-            Assert.AreEqual("8000", row3["count_RNCCalcParty"]);
+            Assert.AreEqual("3", row3["rnccalcparty"]);
+            Assert.AreEqual("8000", row3["count_rnccalcparty"]);
 
-            string[] column = table.GetColumn("count_RNCCalcParty");
+            string[] column = table.GetColumn("count_rnccalcparty");
             Assert.AreEqual(5, column.Length);
             Assert.AreEqual("1600", column[4]);
         }
@@ -73,7 +73,7 @@ namespace TechRoanoke.DataTrustClient.Tests
             string[][] columns = new string[numColumns][];
             for (int i = 0; i < numColumns; i++)
             {
-                string header = data[i];
+                string header = Utility.NormalizeKey(data[i]);
                 string[] column = new string[numRows];
                 dd[header] = column;
                 columns[i] = column;

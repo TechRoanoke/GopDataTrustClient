@@ -72,72 +72,10 @@ namespace TechRoanoke.DataTrustClient
         internal static object Coerce(Type targetType, JToken value)
         {
             var val = value.ToString();
-            return Coerce(targetType, val);
+            return DbConverter.ConvertToObject(targetType, val);
         }
 
-        internal static object Coerce(Type targetType, string val)
-        {
-            // Some enums have special parsing. 
-            // $$$ this is because enum value is the display name. We could avoid this...
-            //     by using the DBValue instead.
-            if (targetType == typeof(State))
-            {
-                return StateExtensions.Parse(val);
-            }
-            if (targetType == typeof(Sex))
-            {
-                return SexExtensions.Parse(val);
-            }
-
-            var it = targetType.GetTypeInfo();
-            if (it.IsEnum)
-            {
-                // handles both integers and string values. 
-                return Enum.Parse(targetType, val);
-            }
-
-            if (targetType == typeof(int))
-            {                
-                return int.Parse(val);
-            }
-            if (targetType == typeof(string))
-            {
-                return val;
-            }
-            if (targetType == typeof(DateTime))
-            {
-                return CoerceDate(val);
-            }
-            if (targetType == typeof(PartyKey))
-            {
-                return PartyKey.Parse(val);
-            }
-                       
-            return val;
-        }
-
-        // Convert from DataTrust date format into C# format. 
-        private static DateTime CoerceDate(string val)
-        {            
-            // YYYYMMDD or YYYYMM or YYYY
-            if (val.Length == 8)
-            {
-                var date = DateTime.ParseExact(val, "yyyyMMdd", CultureInfo.InvariantCulture);
-                return date;
-            }
-            if (val.Length == 6)
-            {
-                var date = DateTime.ParseExact(val, "yyyyMM", CultureInfo.InvariantCulture);
-                return date;
-            }
-            if (val.Length == 4)
-            {
-                var date = DateTime.ParseExact(val, "yyyy", CultureInfo.InvariantCulture);
-                return date;
-            }
-            return DateTime.Parse(val);
-        }
-
+      
         // Convert a JObject into an IDictionary.
         public static IDictionary<string, string> Convert(JObject jobj)
         {
@@ -204,7 +142,7 @@ namespace TechRoanoke.DataTrustClient
             return dd;
         }
 
-        internal static string NormalizeKey(string key)
+        public static string NormalizeKey(string key)
         {
             return key.ToLower();
         }

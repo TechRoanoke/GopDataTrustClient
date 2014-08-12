@@ -40,10 +40,12 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="ClientExtensions.cs" />
-    <Compile Include="Field.cs" />
+    <Compile Include="DbConverter.cs" />
+    <Compile Include="FieldDesc.cs" />
     <Compile Include="DqlException.cs" />
     <Compile Include="FieldTypes\PartyKey.cs" />
     <Compile Include="FieldTypes\PersonID.cs" />
+    <Compile Include="FieldTypes\_Register.cs" />
     <Compile Include="FieldTypes\RncCalcParty.cs" />
     <Compile Include="FieldTypes\Sex.cs" />
     <Compile Include="QueryBuilder.cs" />
