@@ -26,6 +26,12 @@ namespace TechRoanoke.DataTrustClient.Tests
             Assert.AreEqual(RncCalcParty.HardDem, strong[1].RNCCalcParty);
             Assert.AreEqual(1600, strong[1].count_RNCCalcParty);
             Assert.AreEqual(State.Washington, strong[1].state);
+
+            // column access
+            var states = table.GetColumn<State>("state");
+            Assert.AreEqual(2, states.Length);
+            Assert.AreEqual(State.Illinois, states[0]);
+            Assert.AreEqual(State.Washington, states[1]);
         }
 
         public class RNCCalcPartyBreakdown

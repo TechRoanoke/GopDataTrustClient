@@ -18,6 +18,13 @@ namespace TechRoanoke.DataTrustClient
             return table[fieldName];
         }
 
+
+        public static T[] GetColumn<T>(this IDictionary<string, string[]> table, string fieldName)
+        {
+            string[] values = table.GetColumn(fieldName);
+            return DbConverter.ConvertToObject<T>(values);
+        }
+
         // Used when table should only have 1 column, like with Select Distinct
         public static string[] GetSingleColumn(this IDictionary<string, string[]> table)
         {
@@ -27,6 +34,12 @@ namespace TechRoanoke.DataTrustClient
                 throw new InvalidOperationException(msg);
             }
             return table.First().Value;
+        }
+
+        public static T[] GetSingleColumn<T>(this IDictionary<string, string[]> table)
+        {
+            string[] values = table.GetSingleColumn();
+            return DbConverter.ConvertToObject<T>(values);
         }
 
         // Used when a table should only have 1 value. Like Select count(). 

@@ -87,6 +87,17 @@ namespace TechRoanoke.DataTrustClient
             throw new InvalidOperationException(msg);
         }
 
+        public static T[] ConvertToObject<T>(string[] val)
+        {
+            int len = val.Length;
+            T[] array = new T[len];
+            for (int i = 0; i < len; i++)
+            {
+                array[i] = ConvertToObject<T>(val[i]);
+            }
+            return array;
+        }
+
         public static T ConvertToObject<T>(string val)
         {
             var result = ConvertToObject(typeof(T), val);
